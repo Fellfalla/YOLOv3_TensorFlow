@@ -16,8 +16,8 @@ from model import yolov3
 
 
 parser = argparse.ArgumentParser(description="YOLO-V3 test single image test procedure.")
-# parser.add_argument("input_image", type=str,
-#                     help="The path of the input image.")
+parser.add_argument("--camera_id", type=int, default=0,
+                    help="Id of the target webcam")
 parser.add_argument("--anchor_path", type=str, default="./data/yolo_anchors.txt",
                     help="The path of the anchor txt file.")
 parser.add_argument("--new_size", nargs='*', type=int, default=[416, 416],
@@ -47,6 +47,7 @@ color_table = get_color_table(args.num_class)
 # img = img[np.newaxis, :] / 255.
 
 with tf.Session() as sess:
+    print("###### Loading the Model #####")
     input_data = tf.placeholder(tf.float32, [1, args.new_size[1], args.new_size[0], 3], name='input_data')
     yolo_model = yolov3(args.num_class, args.anchors)
 
@@ -63,7 +64,7 @@ with tf.Session() as sess:
     saver.restore(sess, args.restore_path)
 
     print("###### Starting the Webcam #####")
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(default)
 
     print("##### Starting the Detection Loop #####")
     while(True):
