@@ -1,6 +1,6 @@
 # coding: utf-8
-
 from __future__ import division, print_function
+import os
 
 import tensorflow as tf
 import numpy as np
@@ -14,19 +14,20 @@ from utils.data_aug import letterbox_resize
 
 from model import yolov3
 
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 parser = argparse.ArgumentParser(description="YOLO-V3 test single image test procedure.")
 parser.add_argument("--camera_id", type=int, default=0,
                     help="Id of the target webcam")
-parser.add_argument("--anchor_path", type=str, default="./data/yolo_anchors.txt",
+parser.add_argument("--anchor_path", type=str, default=os.path.join(SCRIPT_PATH, "data/yolo_anchors.txt"),
                     help="The path of the anchor txt file.")
 parser.add_argument("--new_size", nargs='*', type=int, default=[416, 416],
                     help="Resize the input image with `new_size`, size format: [width, height]")
 parser.add_argument("--letterbox_resize", type=lambda x: (str(x).lower() == 'true'), default=True,
                     help="Whether to use the letterbox resize.")
-parser.add_argument("--class_name_path", type=str, default="./data/coco.names",
+parser.add_argument("--class_name_path", type=str, default=os.path.join(SCRIPT_PATH,"data/coco.names"),
                     help="The path of the class names.")
-parser.add_argument("--restore_path", type=str, default="./data/darknet_weights/yolov3.ckpt",
+parser.add_argument("--restore_path", type=str, default=os.path.join(SCRIPT_PATH,"data/darknet_weights/yolov3.ckpt"),
                     help="The path of the weights to restore.")
 args = parser.parse_args()
 
