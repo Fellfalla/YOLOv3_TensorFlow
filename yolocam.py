@@ -64,7 +64,7 @@ with tf.Session() as sess:
     saver.restore(sess, args.restore_path)
 
     print("###### Starting the Webcam #####")
-    cap = cv2.VideoCapture(default)
+    cap = cv2.VideoCapture(args.camera_id)
 
     print("##### Starting the Detection Loop #####")
     while(True):
