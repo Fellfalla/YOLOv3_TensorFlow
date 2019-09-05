@@ -138,8 +138,8 @@ if __name__ == '__main__':
     # target resize format: [width, height]
     # if target_resize is speficied, the anchors are on the resized image scale
     # if target_resize is set to None, the anchors are on the original image scale
-    target_size = [416, 416]
-    annotation_path = "train.txt"
+    target_size = [1280, 720]
+    annotation_path = "data/my_data/train.txt"
     anno_result = parse_anno(annotation_path, target_size=target_size)
     anchors, ave_iou = get_kmeans(anno_result, 9)
 

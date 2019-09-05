@@ -9,6 +9,12 @@ import random
 def get_color_table(class_num, seed=2):
     random.seed(seed)
     color_table = {}
+    # if class_num == 3:
+    return [
+        [0x4c, 0x9d, 0xff], # orange
+        [0xac, 0x84, 0x3a], # light blue
+        [0x4c, 0xf7, 0xff]  # yellow
+    ]
     for i in range(class_num):
         color_table[i] = [random.randint(0, 255) for _ in range(3)]
     return color_table

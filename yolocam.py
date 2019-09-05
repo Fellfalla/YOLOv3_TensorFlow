@@ -17,7 +17,7 @@ from model import yolov3
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 parser = argparse.ArgumentParser(description="YOLO-V3 test single image test procedure.")
-parser.add_argument("--camera_id", type=int, default=0,
+parser.add_argument("--camera-id", default=0,
                     help="Id of the target webcam")
 parser.add_argument("--anchor_path", type=str, default=os.path.join(SCRIPT_PATH, "data/yolo_anchors.txt"),
                     help="The path of the anchor txt file.")
@@ -25,7 +25,7 @@ parser.add_argument("--new_size", nargs='*', type=int, default=[416, 416],
                     help="Resize the input image with `new_size`, size format: [width, height]")
 parser.add_argument("--letterbox_resize", type=lambda x: (str(x).lower() == 'true'), default=True,
                     help="Whether to use the letterbox resize.")
-parser.add_argument("--class_name_path", type=str, default=os.path.join(SCRIPT_PATH,"data/coco.names"),
+parser.add_argument("--class_name_path", type=str, default=os.path.join(SCRIPT_PATH,"data/data.names"),
                     help="The path of the class names.")
 parser.add_argument("--restore_path", type=str, default=os.path.join(SCRIPT_PATH,"data/darknet_weights/yolov3.ckpt"),
                     help="The path of the weights to restore.")
@@ -67,11 +67,21 @@ with tf.Session() as sess:
     print("###### Starting the Webcam #####")
     cap = cv2.VideoCapture(args.camera_id)
 
+    num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_cnt = 0
+
+    frame_width = int(cap.get(3))
+    frame_height = int(cap.get(4))
+    out = cv2.VideoWriter(args.camera_id + '.yolo.avi', cv2.VideoWriter_fourcc('M','J','P','G'), 30, (frame_width,frame_height))
+
     print("##### Starting the Detection Loop #####")
     while(True):
         # Capture frame-by-frame
         ret, frame = cap.read()
         img_ori = frame
+
+        if ret != True:
+            break
 
         # Our operations on the frame come here
         # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -103,10 +113,18 @@ with tf.Session() as sess:
         print('*' * 30)
         print("labels:")
         print(labels_)
+        print("frame:")
+        print(f"{frame_cnt}/{num_frames}")
 
         for i in range(len(boxes_)):
             x0, y0, x1, y1 = boxes_[i]
             plot_one_box(img_ori, [x0, y0, x1, y1], label=args.classes[labels_[i]] + ', {:.2f}%'.format(scores_[i] * 100), color=color_table[labels_[i]])
-        cv2.imshow('Detection result', img_ori)
-        # cv2.imwrite('detection_result.jpg', img_ori)
+        cv2.imshow(f'Detection result', img_ori)
+        out.write(img_ori)
         cv2.waitKey(1)
+        frame_cnt += 1
+
+    cap.release()
+    out.release()
+
+    cv2.destroyAllWindows()
